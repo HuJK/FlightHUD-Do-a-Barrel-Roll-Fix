@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
+import java.nio.FloatBuffer;
 
 public class FlightComputer {
   private static final float TICKS_PER_SECOND = 20;
@@ -29,7 +29,8 @@ public class FlightComputer {
   public Float distanceFromGround;
   public Float elytraHealth;
 
-  public void update(MinecraftClient client, Matrix3f normalMatrix) {
+  public void update(MinecraftClient client, net.minecraft.util.math.Matrix3f normalMatrix_raw) {
+    Matrix3fJoml normalMatrix = new Matrix3fJoml(normalMatrix_raw);
     heading = computeHeading(client, normalMatrix);
     pitch = computePitch(client, normalMatrix);
     roll = computeRoll(client, normalMatrix);
@@ -70,7 +71,7 @@ public class FlightComputer {
 
   //region Camera Angles
 
-  private float computeRoll(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeRoll(MinecraftClient client, Matrix3fJoml normalMatrix) {
     if (!FlightHud.CONFIG_SETTINGS.calculateRoll) {
       return 0.0f;
     }
@@ -80,7 +81,7 @@ public class FlightComputer {
     return (float) Math.toDegrees(Math.atan2(y, x));
   }
 
-  private float computePitch(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computePitch(MinecraftClient client, Matrix3fJoml normalMatrix) {
     if (client.player == null) {
       return 0.0f;
     }
@@ -88,7 +89,7 @@ public class FlightComputer {
     return -client.player.getPitch();
   }
 
-  private float computeHeading(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeHeading(MinecraftClient client, Matrix3fJoml normalMatrix) {
     if (client.player == null) {
       return 0.0f;
     }
