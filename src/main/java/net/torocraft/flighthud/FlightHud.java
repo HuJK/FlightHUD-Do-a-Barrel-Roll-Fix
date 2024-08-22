@@ -10,6 +10,7 @@ import net.minecraft.client.util.InputUtil;
 import net.torocraft.flighthud.config.HudConfig;
 import net.torocraft.flighthud.config.SettingsConfig;
 import net.torocraft.flighthud.config.loader.ConfigLoader;
+import static net.torocraft.flighthud.FlightHud.computer;
 import org.lwjgl.glfw.GLFW;
 
 public class FlightHud implements ClientModInitializer {
@@ -37,6 +38,8 @@ public class FlightHud implements ClientModInitializer {
     config -> FlightHud.CONFIG_MIN = config);
 
   private static KeyBinding keyBinding;
+
+  public static final FlightComputer computer = new FlightComputer();
 
   @Override
   public void onInitializeClient() {
