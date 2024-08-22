@@ -1,9 +1,11 @@
 package net.torocraft.flighthud.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.RotationAxis;
+
 import org.joml.Matrix3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,22 +21,29 @@ public class GameRendererMixin {
     @Shadow
     @Final
     MinecraftClient client;
+    Camera camera;
 
     @Inject(
-            method = "renderWorld",
+            method = "renderWorld(FJ)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;setInverseViewRotationMatrix(Lorg/joml/Matrix3f;)V",
+                    target = "Lnet/minecraft/client/render/GameRenderer;loadProjectionMatrix(Lorg/joml/Matrix4f;)V",
                     shift = At.Shift.AFTER
             )
     )
     private void renderWorld(
             float tickDelta,
             long limitTime,
-            MatrixStack matrices,
             CallbackInfo ci
+            
     ) {
-        Matrix3f inverseViewRotationMatrix = RenderSystem.getInverseViewRotationMatrix();
-        computer.update(client, inverseViewRotationMatrix.invert());
+        Camera camera = this.camera;
+        MatrixStack matrices = new MatrixStack();
+        if (camera != null) {
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
+        }
+        Matrix3f matrix3f = (new Matrix3f(matrices.peek().getNormalMatrix()));
+        computer.update(client, matrix3f);
     }
 }

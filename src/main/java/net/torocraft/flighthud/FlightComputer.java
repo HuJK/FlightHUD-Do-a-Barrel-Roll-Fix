@@ -7,14 +7,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix3f;
 
 public class FlightComputer {
   private static final float TICKS_PER_SECOND = 20;
-
-  private float previousRollAngle = 0.0f;
 
   public Vec3d velocity;
   public float speed;

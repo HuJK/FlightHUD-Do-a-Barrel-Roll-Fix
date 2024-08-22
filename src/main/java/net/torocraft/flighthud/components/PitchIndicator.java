@@ -33,7 +33,7 @@ public class PitchIndicator extends HudComponent {
       m.push();
       m.translate(b, a, 0);
 //      m.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
-      m.multiply(new org.joml.Quaternionf().fromAxisAngleDeg(new org.joml.Vector3f(0, 0, 1),roll));
+      m.multiply(new org.joml.Quaternionf().fromAxisAngleDeg(new Vector3f(0, 0, 1),roll));
       m.translate(-b, -a, 0);
     }
 

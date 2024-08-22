@@ -10,7 +10,6 @@ import net.torocraft.flighthud.components.LocationIndicator;
 import net.torocraft.flighthud.components.PitchIndicator;
 import net.torocraft.flighthud.components.SpeedIndicator;
 import net.torocraft.flighthud.config.SettingsConfig.DisplayMode;
-import com.mojang.blaze3d.systems.RenderSystem;
 import static net.torocraft.flighthud.FlightHud.computer;
 
 public class HudRenderer extends HudComponent {
