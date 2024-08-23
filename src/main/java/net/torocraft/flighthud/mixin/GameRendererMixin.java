@@ -20,8 +20,8 @@ import static net.torocraft.flighthud.FlightHud.computer;
 public class GameRendererMixin {
     @Shadow
     @Final
+    private Camera camera;
     MinecraftClient client;
-    Camera camera;
 
     @Inject(
             method = "renderWorld(FJ)V",
@@ -38,12 +38,6 @@ public class GameRendererMixin {
             
     ) {
         Camera camera = this.camera;
-        MatrixStack matrices = new MatrixStack();
-        if (camera != null) {
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
-        }
-        Matrix3f matrix3f = (new Matrix3f(matrices.peek().getNormalMatrix()));
-        computer.update(client, matrix3f);
+        computer.update(client,camera);
     }
 }

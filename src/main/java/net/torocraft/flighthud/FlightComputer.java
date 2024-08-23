@@ -2,13 +2,18 @@ package net.torocraft.flighthud;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class FlightComputer {
   private static final float TICKS_PER_SECOND = 20;
@@ -26,10 +31,52 @@ public class FlightComputer {
   public Float distanceFromGround;
   public Float elytraHealth;
 
-  public void update(MinecraftClient client, Matrix3f normalMatrix) {
+  public static Vector3f quaternionToEuler(Quaternionf q) {
+    double x = q.x;
+    double y = q.y;
+    double z = q.z;
+    double w = q.w;
+
+    double yaw, pitch, roll;
+
+    // Yaw (Y-axis rotation)
+    double sinr_cosp = 2 * (w * y + x * z);
+    double cosr_cosp = 1 - 2 * (y * y + x * x);
+    yaw = Math.atan2(sinr_cosp, cosr_cosp);
+
+    // Pitch (X-axis rotation)
+    double sinp = 2 * (w * x - z * y);
+    if (Math.abs(sinp) >= 1)
+        pitch = Math.copySign(Math.PI / 2, sinp); // use 90 degrees if out of range
+    else
+        pitch = Math.asin(sinp);
+
+    // Roll (Z-axis rotation)
+    double siny_cosp = 2 * (w * z + y * x);
+    double cosy_cosp = 1 - 2 * (x * x + z * z);
+    roll = Math.atan2(siny_cosp, cosy_cosp);
+
+    return new Vector3f((float) yaw, (float) pitch, (float) roll);
+}
+
+  public void update(MinecraftClient client, Camera camera) {
+    Matrix3f normalMatrix = new Matrix3f();
+    if (camera != null) {
+        MatrixStack matrices = new MatrixStack();
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
+        normalMatrix = (new Matrix3f(matrices.peek().getNormalMatrix()));
+        Vector3f euler = quaternionToEuler(camera.getRotation());
+        double dagn = 180/Math.PI;
+        System.out.printf("Y: %f, X: %f, Z: %f\n", euler.x*dagn,euler.y*dagn,euler.z*dagn);
+    }
+
+    
+    
     heading = computeHeading(client, normalMatrix);
     pitch = computePitch(client, normalMatrix);
     roll = computeRoll(client, normalMatrix);
+    System.out.printf("heading: %f, pitch: %f, roll: %f\n", heading,pitch,roll);
     velocity = client.player.getVelocity();
     speed = computeSpeed(client);
     altitude = computeAltitude(client);
