@@ -8,10 +8,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class FlightComputer {
   private static final float TICKS_PER_SECOND = 20;
+  static final float rad2deg = (float)(180/Math.PI);
 
   public Vec3d velocity;
   public float speed;
@@ -26,10 +28,42 @@ public class FlightComputer {
   public Float distanceFromGround;
   public Float elytraHealth;
 
-  public void update(MinecraftClient client, Matrix3f normalMatrix) {
-    heading = computeHeading(client, normalMatrix);
-    pitch = computePitch(client, normalMatrix);
-    roll = computeRoll(client, normalMatrix);
+  public static Vector3f quaternionToEuler(Quaternionf q) {
+    double x = q.x;
+    double y = q.y;
+    double z = q.z;
+    double w = q.w;
+
+    double yaw, pitch, roll;
+
+    // Yaw (Y-axis rotation)
+    double sinr_cosp = 2 * (w * y + x * z);
+    double cosr_cosp = 1 - 2 * (y * y + x * x);
+    yaw = Math.atan2(sinr_cosp, cosr_cosp);
+
+    // Pitch (X-axis rotation)
+    double sinp = 2 * (w * x - z * y);
+    if (Math.abs(sinp) >= 1)
+        pitch = Math.copySign(Math.PI / 2, sinp); // use 90 degrees if out of range
+    else
+        pitch = Math.asin(sinp);
+
+    // Roll (Z-axis rotation)
+    double siny_cosp = 2 * (w * z + y * x);
+    double cosy_cosp = 1 - 2 * (x * x + z * z);
+    roll = Math.atan2(siny_cosp, cosy_cosp);
+
+    return new Vector3f((float) yaw, (float) pitch, (float) roll);
+  }
+
+  public void update(MinecraftClient client, Quaternionf rotation) {
+    if (client==null){
+      return;
+    }
+    Vector3f eulerrotation = quaternionToEuler(rotation);
+    heading =  computeHeading(client);
+    pitch =  computePitch(client);
+    roll = computeRoll(client, -eulerrotation.z* rad2deg);
     velocity = client.player.getVelocity();
     speed = computeSpeed(client);
     altitude = computeAltitude(client);
@@ -69,17 +103,15 @@ public class FlightComputer {
    * https://github.com/Jorbon/cool_elytra/blob/main/src/main/java/edu/jorbonism/cool_elytra/mixin/GameRendererMixin.java
    * to enable both mods will sync up when used together.
    */
-  private float computeRoll(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeRoll(MinecraftClient client, float roll) {
     if (!FlightHud.CONFIG_SETTINGS.calculateRoll) {
       return 0.0f;
     }
 
-    float y = normalMatrix.getRowColumn(0, 1);
-    float x = normalMatrix.getRowColumn(1, 1);
-    return (float) Math.toDegrees(Math.atan2(y, x));
+    return roll;
   }
 
-  private float computePitch(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computePitch(MinecraftClient client) {
     if (client.player == null) {
       return 0.0f;
     }
@@ -120,7 +152,7 @@ public class FlightComputer {
     return (float) client.player.getPos().y - 1;
   }
 
-  private float computeHeading(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeHeading(MinecraftClient client) {
     if (client.player == null) {
       return 0.0f;
     }
