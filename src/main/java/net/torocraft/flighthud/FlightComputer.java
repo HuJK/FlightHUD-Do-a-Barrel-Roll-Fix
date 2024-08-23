@@ -2,21 +2,18 @@ package net.torocraft.flighthud;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class FlightComputer {
   private static final float TICKS_PER_SECOND = 20;
+  static final float rad2deg = (float)(180/Math.PI);
 
   public Vec3d velocity;
   public float speed;
@@ -57,26 +54,16 @@ public class FlightComputer {
     roll = Math.atan2(siny_cosp, cosy_cosp);
 
     return new Vector3f((float) yaw, (float) pitch, (float) roll);
-}
+  }
 
-  public void update(MinecraftClient client, Camera camera) {
-    Matrix3f normalMatrix = new Matrix3f();
-    if (camera != null) {
-        MatrixStack matrices = new MatrixStack();
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
-        normalMatrix = (new Matrix3f(matrices.peek().getNormalMatrix()));
-        Vector3f euler = quaternionToEuler(camera.getRotation());
-        double dagn = 180/Math.PI;
-        System.out.printf("Y: %f, X: %f, Z: %f\n", euler.x*dagn,euler.y*dagn,euler.z*dagn);
+  public void update(MinecraftClient client, Quaternionf rotation) {
+    if (client==null){
+      return;
     }
-
-    
-    
-    heading = computeHeading(client, normalMatrix);
-    pitch = computePitch(client, normalMatrix);
-    roll = computeRoll(client, normalMatrix);
-    System.out.printf("heading: %f, pitch: %f, roll: %f\n", heading,pitch,roll);
+    Vector3f eulerrotation = quaternionToEuler(rotation);
+    heading =  computeHeading(client);
+    pitch =  computePitch(client);
+    roll = computeRoll(client, eulerrotation.z* rad2deg);
     velocity = client.player.getVelocity();
     speed = computeSpeed(client);
     altitude = computeAltitude(client);
@@ -116,17 +103,15 @@ public class FlightComputer {
    * https://github.com/Jorbon/cool_elytra/blob/main/src/main/java/edu/jorbonism/cool_elytra/mixin/GameRendererMixin.java
    * to enable both mods will sync up when used together.
    */
-  private float computeRoll(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeRoll(MinecraftClient client, float roll) {
     if (!FlightHud.CONFIG_SETTINGS.calculateRoll) {
       return 0.0f;
     }
 
-    float y = normalMatrix.getRowColumn(0, 1);
-    float x = normalMatrix.getRowColumn(1, 1);
-    return (float) Math.toDegrees(Math.atan2(y, x));
+    return roll;
   }
 
-  private float computePitch(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computePitch(MinecraftClient client) {
     if (client.player == null) {
       return 0.0f;
     }
@@ -167,7 +152,7 @@ public class FlightComputer {
     return (float) client.player.getPos().y - 1;
   }
 
-  private float computeHeading(MinecraftClient client, Matrix3f normalMatrix) {
+  private float computeHeading(MinecraftClient client) {
     if (client.player == null) {
       return 0.0f;
     }
