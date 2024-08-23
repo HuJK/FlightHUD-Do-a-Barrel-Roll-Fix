@@ -9,7 +9,7 @@ Source code for each version
 1. 1.18.2: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.18.2
 2. 1.19.4: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.19.4
 3. 1.20~1.20.4: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.20
-4. 1.20.5~1.20.6: WIP
+4. 1.20.5~1.20.6: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.20.5
 5. 1.21~1.21.1: WIP
 
 ## Demo video
