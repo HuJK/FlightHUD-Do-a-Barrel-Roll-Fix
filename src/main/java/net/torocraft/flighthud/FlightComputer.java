@@ -61,9 +61,9 @@ public class FlightComputer {
       return;
     }
     Vector3f eulerrotation = quaternionToEuler(rotation);
-    heading =  computeHeading(client);
-    pitch =  computePitch(client);
-    roll = computeRoll(client, -eulerrotation.z* rad2deg);
+    heading = -eulerrotation.x* rad2deg;
+    pitch = eulerrotation.y* rad2deg;
+    roll = eulerrotation.z* rad2deg;
     velocity = client.player.getVelocity();
     speed = computeSpeed(client);
     altitude = computeAltitude(client);
@@ -98,27 +98,6 @@ public class FlightComputer {
     return toHeading((float) Math.toDegrees(-Math.atan2(velocity.x, velocity.z)));
   }
 
-  /**
-   * Roll logic is from:
-   * https://github.com/Jorbon/cool_elytra/blob/main/src/main/java/edu/jorbonism/cool_elytra/mixin/GameRendererMixin.java
-   * to enable both mods will sync up when used together.
-   */
-  private float computeRoll(MinecraftClient client, float roll) {
-    if (!FlightHud.CONFIG_SETTINGS.calculateRoll) {
-      return 0.0f;
-    }
-
-    return roll;
-  }
-
-  private float computePitch(MinecraftClient client) {
-    if (client.player == null) {
-      return 0.0f;
-    }
-
-    return -client.player.getPitch();
-  }
-
   private boolean isGround(BlockPos pos, MinecraftClient client) {
     BlockState block = client.world.getBlockState(pos);
     return !block.isAir();
@@ -150,14 +129,6 @@ public class FlightComputer {
 
   private float computeAltitude(MinecraftClient client) {
     return (float) client.player.getPos().y - 1;
-  }
-
-  private float computeHeading(MinecraftClient client) {
-    if (client.player == null) {
-      return 0.0f;
-    }
-
-    return toHeading(client.player.getYaw());
   }
 
   private float computeSpeed(MinecraftClient client) {
