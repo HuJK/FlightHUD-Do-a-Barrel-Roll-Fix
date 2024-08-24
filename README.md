@@ -1,9 +1,10 @@
-# Flight HUD Do a barrel roll fix
+# Flight HUD: Do a barrel roll fix
 This is a fix to make FlightHUD work with Do a barrel roll mod.
 
 Related Projects:
 * Origional Repo: https://github.com/frodare/FlightHud
 * Patch Author: https://github.com/allemangD/FlightHud
+* Flight HUD: Reborn: https://github.com/MikhailTapio/FlightHud
 
 Source code for each version
 1. 1.18.2: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.18.2
