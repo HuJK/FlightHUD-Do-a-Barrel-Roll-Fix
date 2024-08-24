@@ -1,5 +1,8 @@
 # Flight HUD: Do a barrel roll fix
-This is a fix to make FlightHUD work with Do a barrel roll mod.
+This is a fix to make FlightHUD work with Do a barrel roll mod.  
+
+This fix removes all estimation of roll angle, it just inject to RenderSystem and retrive the value `camera.getRotation()`.  
+So, no matter how other mods rotates the view, it will always be perfict align to the player ViewRotation.  
 
 Related Projects:
 * Origional Repo: https://github.com/frodare/FlightHud
@@ -11,7 +14,7 @@ Source code for each version
 2. 1.19.4: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.19.4
 3. 1.20~1.20.4: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.20
 4. 1.20.5~1.20.6: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.20.5
-5. 1.21~1.21.1: WIP
+5. 1.21~1.21.1: https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/tree/dabr-1.21
 
 ## Demo video
 [![Demo video](https://github.com/user-attachments/assets/a41e8f8e-7309-4e39-8618-d18d82af8806)](https://www.youtube.com/watch?v=WlWCB49DieU&t=160s)
