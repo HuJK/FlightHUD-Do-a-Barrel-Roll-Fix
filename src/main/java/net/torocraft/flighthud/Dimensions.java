@@ -9,7 +9,7 @@ public class Dimensions {
 
   public float hScreen;
   public float wScreen;
-  public float degreesPerPixel;
+  public float pixelsPerDegree;
   public float xMid;
   public float yMid;
 
@@ -34,7 +34,7 @@ public class Dimensions {
     }
 
     // The HUD is rendered as a plane in front of the player and not at a
-    // spehere. The degreesPerPixel parameter is therefore a simplification,
+    // spehere. The pixelsPerDegree parameter is therefore a simplification,
     // which is not exact.
     //
     // To use this simplification, a given spot on the screen has to be picked
@@ -52,11 +52,10 @@ public class Dimensions {
     // Note that FOV is degrees from top to bottom, we need height from center
     // to top
 
-    // Also note that "degreesPerPixel" is actually pixels per degree...
     Integer fov_deg = client.options.getFov().getValue();
     double hud_height = Math.tan(fov_deg * Math.PI / 180.0 / 2.0);
     double hud_pixel_height = hud_height / (double)(hScreen/2);
-    degreesPerPixel = 1.0f / (float)(Math.atan(hud_pixel_height) * 180.0 / Math.PI);
+    pixelsPerDegree = 1.0f / (float)(Math.atan(hud_pixel_height) * 180.0 / Math.PI);
 
     xMid = wScreen / 2;
     yMid = hScreen / 2;
