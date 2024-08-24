@@ -24,6 +24,6 @@ public class InGameHudMixin {
 
   @Inject(method = "render", at = @At("RETURN"))
   private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
-    hud.render(context.getMatrices(), tickDelta, client);
+    hud.render(context,tickDelta, client);
   }
 }

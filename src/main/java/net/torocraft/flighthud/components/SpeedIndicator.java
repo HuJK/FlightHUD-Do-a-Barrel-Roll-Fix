@@ -1,10 +1,10 @@
 package net.torocraft.flighthud.components;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
 import net.torocraft.flighthud.Dimensions;
 import net.torocraft.flighthud.FlightComputer;
 import net.torocraft.flighthud.HudComponent;
+import net.minecraft.client.gui.DrawContext;
 
 public class SpeedIndicator extends HudComponent {
   private final Dimensions dim;
@@ -16,7 +16,7 @@ public class SpeedIndicator extends HudComponent {
   }
 
   @Override
-  public void render(MatrixStack m, float partial, MinecraftClient mc) {
+  public void render(DrawContext context, float partial, MinecraftClient mc) {
     float top = dim.tFrame;
     float bottom = dim.bFrame;
 
@@ -30,8 +30,8 @@ public class SpeedIndicator extends HudComponent {
     float xSpeedText = left - 5;
 
     if (CONFIG.speed_showReadout) {
-      drawRightAlignedFont(mc, m, String.format("%.2f", computer.speed), xSpeedText, dim.yMid - 3);
-      drawBox(m, xSpeedText - 29.5f, dim.yMid - 4.5f, 30, 10);
+      drawRightAlignedFont(mc, context, String.format("%.2f", computer.speed), xSpeedText, dim.yMid - 3);
+      drawBox(context, xSpeedText - 29.5f, dim.yMid - 4.5f, 30, 10);
     }
 
 
@@ -42,12 +42,12 @@ public class SpeedIndicator extends HudComponent {
           continue;
 
         if (i % 1 == 0) {
-          drawHorizontalLine(m, left - 2, right, y);
+          drawHorizontalLine(context, left - 2, right, y);
           if (!CONFIG.speed_showReadout || y > dim.yMid + 7 || y < dim.yMid - 7) {
-            drawRightAlignedFont(mc, m, String.format("%.0f", i), xSpeedText, y - 3);
+            drawRightAlignedFont(mc, context, String.format("%.0f", i), xSpeedText, y - 3);
           }
         }
-        drawHorizontalLine(m, left, right, y);
+        drawHorizontalLine(context, left, right, y);
       }
     }
   }
