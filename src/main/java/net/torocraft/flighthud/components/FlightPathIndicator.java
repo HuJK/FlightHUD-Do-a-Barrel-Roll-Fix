@@ -31,8 +31,9 @@ public class FlightPathIndicator extends HudComponent {
     float y = dim.yMid;
     float x = dim.xMid;
 
-    y += i(deltaPitch * dim.degreesPerPixel);
-    x += i(deltaHeading * dim.degreesPerPixel);
+    y += i(deltaPitch * dim.pixelsPerDegree);
+    // Subtract X, so the flight path indicator moves into the turn when turning
+    x -= i(deltaHeading * dim.pixelsPerDegree);
 
     if (y < dim.tFrame || y > dim.bFrame || x < dim.lFrame || x > dim.rFrame) {
       return;

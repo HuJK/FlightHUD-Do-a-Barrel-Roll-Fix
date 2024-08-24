@@ -23,7 +23,7 @@ public class HeadingIndicator extends HudComponent {
     float top = dim.tFrame - 10;
 
     float yText = top - 7;
-    float northOffset = computer.heading * dim.degreesPerPixel;
+    float northOffset = computer.heading * dim.pixelsPerDegree;
     float xNorth = dim.xMid - northOffset;
 
     if (CONFIG.heading_showReadout) {
@@ -34,7 +34,7 @@ public class HeadingIndicator extends HudComponent {
     if (CONFIG.heading_showScale) {
       drawPointer(context, dim.xMid, top + 10, 0);
       for (int i = -540; i < 540; i = i + 5) {
-        float x = (i * dim.degreesPerPixel) + xNorth;
+        float x = (i * dim.pixelsPerDegree) + xNorth;
         if (x < left || x > right)
           continue;
 

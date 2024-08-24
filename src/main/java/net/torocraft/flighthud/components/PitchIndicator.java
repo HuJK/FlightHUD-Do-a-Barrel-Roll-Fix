@@ -22,7 +22,7 @@ public class PitchIndicator extends HudComponent {
   public void render(DrawContext context, float partial, MinecraftClient mc) {
     pitchData.update(dim);
 
-    float horizonOffset = computer.pitch * dim.degreesPerPixel;
+    float horizonOffset = computer.pitch * dim.pixelsPerDegree;
     float yHorizon = dim.yMid + horizonOffset;
 
     float a = dim.yMid;
@@ -64,7 +64,7 @@ public class PitchIndicator extends HudComponent {
     }
 
     for (int i = degreesPerBar; i <= 90; i = i + degreesPerBar) {
-      float offset = dim.degreesPerPixel * i;
+      float offset = dim.pixelsPerDegree * i;
       drawDegreeBar(mc, context, -i, yHorizon + offset);
       drawDegreeBar(mc, context, i, yHorizon - offset);
     }
@@ -76,7 +76,7 @@ public class PitchIndicator extends HudComponent {
       return;
     }
 
-    float y = (-degrees * dim.degreesPerPixel) + yHorizon;
+    float y = (-degrees * dim.pixelsPerDegree) + yHorizon;
 
     if (y < dim.tFrame || y > dim.bFrame) {
       return;
