@@ -3,6 +3,7 @@ package net.torocraft.flighthud.mixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter;
 
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Final;
@@ -24,7 +25,7 @@ public class GameRendererMixin {
     MinecraftClient client;
 
     @Inject(
-            method = "renderWorld(FJ)V",
+            method = "renderWorld",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/render/GameRenderer;loadProjectionMatrix(Lorg/joml/Matrix4f;)V",
@@ -32,8 +33,7 @@ public class GameRendererMixin {
             )
     )
     private void renderWorld(
-            float tickDelta,
-            long limitTime,
+            RenderTickCounter tickCounter,
             CallbackInfo ci
     ) {
         if(camera != null){
