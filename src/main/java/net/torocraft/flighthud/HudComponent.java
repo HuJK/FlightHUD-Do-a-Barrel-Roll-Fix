@@ -2,7 +2,7 @@ package net.torocraft.flighthud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.torocraft.flighthud.config.HudConfig;
@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
 
 public abstract class HudComponent{
 
-  public abstract void render(MatrixStack m, float partial, MinecraftClient client);
+  public abstract void render(DrawContext context, float partial, MinecraftClient client);
 
   public static HudConfig CONFIG;
 
@@ -18,14 +18,15 @@ public abstract class HudComponent{
     return (int) Math.round(d);
   }
 
-  protected void drawPointer(MatrixStack m, float x, float y, float rot) {
-    m.push();
-    m.translate(x, y, 0);
+  protected void drawPointer(DrawContext context, float x, float y, float rot) {
+    MatrixStack matrixes = context.getMatrices();
+    matrixes.push();
+    matrixes.translate(x, y, 0);
 //    m.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rot + 45));
-    m.multiply(new org.joml.Quaternionf().fromAxisAngleDeg(new org.joml.Vector3f(0, 0, 1),rot+45));
-    drawVerticalLine(m, 0, 0, 5);//, CONFIG.color
-    drawHorizontalLine(m, 0, 5, 0);//, CONFIG.color
-    m.pop();
+    matrixes.multiply(new org.joml.Quaternionf().fromAxisAngleDeg(new org.joml.Vector3f(0, 0, 1),rot+45));
+    drawVerticalLine(context, 0, 0, 5);//, CONFIG.color
+    drawHorizontalLine(context, 0, 5, 0);//, CONFIG.color
+    matrixes.pop();
   }
 
   protected float wrapHeading(float degrees) {
@@ -36,39 +37,28 @@ public abstract class HudComponent{
     return degrees;
   }
 
-  protected void drawFont(MinecraftClient mc, MatrixStack m, String s, float x, float y) {
-    drawFont(mc, m, s, x, y, CONFIG.color);
+  protected void drawFont(MinecraftClient mc, DrawContext context, String text, float x, float y) {
+    drawFont(mc, context, text, x, y, CONFIG.color);
   }
 
-  protected void drawFont(MinecraftClient mc, MatrixStack m, String s, float x, float y,
-      int color) {
-    mc.textRenderer.draw(
-            s,
-            x,
-            y,
-            color,
-            false,
-            m.peek().getPositionMatrix(),
-            mc.getBufferBuilders().getOutlineVertexConsumers(),
-            TextRenderer.TextLayerType.NORMAL,
-            0,
-            255);//, CONFIG.color//m,
+  protected void drawFont(MinecraftClient mc, DrawContext context, String text, float x, float y, int color) {
+    context.drawText(mc.textRenderer, text, (int)x, (int)y, color, false);
   }
 
-  protected void drawRightAlignedFont(MinecraftClient mc, MatrixStack m, String s, float x,
+  protected void drawRightAlignedFont(MinecraftClient mc, DrawContext context, String s, float x,
       float y) {
     int w = mc.textRenderer.getWidth(s);
-    drawFont(mc, m, s, x - w, y);
+    drawFont(mc, context, s, x - w, y);
   }
 
-  protected void drawBox(MatrixStack m, float x, float y, float w, float h) {
-    drawHorizontalLine(m, x, x + w, y);
-    drawHorizontalLine(m, x, x + w, y + h);
-    drawVerticalLine(m, x, y, y + h);
-    drawVerticalLine(m, x + w, y, y + h);
+  protected void drawBox(DrawContext context, float x, float y, float w, float h) {
+    drawHorizontalLine(context, x, x + w, y);
+    drawHorizontalLine(context, x, x + w, y + h);
+    drawVerticalLine(context, x, y, y + h);
+    drawVerticalLine(context, x + w, y, y + h);
   }
 
-  protected void drawHorizontalLineDashed(MatrixStack m, float x1, float x2, float y,
+  protected void drawHorizontalLineDashed(DrawContext context, float x1, float x2, float y,
       int dashCount) {
     float width = x2 - x1;
     int segmentCount = dashCount * 2 - 1;
@@ -84,33 +74,34 @@ public abstract class HudComponent{
       } else {
         dx2 = ((i + 1) * dashSize) + x1;
       }
-      drawHorizontalLine(m, dx1, dx2, y);
+      drawHorizontalLine(context, dx1, dx2, y);
     }
   }
 
-  protected void drawHorizontalLine(MatrixStack matrices, float x1, float x2, float y) {
+  protected void drawHorizontalLine(DrawContext context, float x1, float x2, float y) {
     if (x2 < x1) {
       float i = x1;
       x1 = x2;
       x2 = i;
     }
-    fill(matrices, x1 - CONFIG.halfThickness, y - CONFIG.halfThickness, x2 + CONFIG.halfThickness,
+    fill(context, x1 - CONFIG.halfThickness, y - CONFIG.halfThickness, x2 + CONFIG.halfThickness,
         y + CONFIG.halfThickness);
   }
 
-  protected void drawVerticalLine(MatrixStack matrices, float x, float y1, float y2) {
+  protected void drawVerticalLine(DrawContext context, float x, float y1, float y2) {
     if (y2 < y1) {
       float i = y1;
       y1 = y2;
       y2 = i;
     }
 
-    fill(matrices, x - CONFIG.halfThickness, y1 + CONFIG.halfThickness, x + CONFIG.halfThickness,
+    fill(context, x - CONFIG.halfThickness, y1 + CONFIG.halfThickness, x + CONFIG.halfThickness,
         y2 - CONFIG.halfThickness);
   }
 
-  public static void fill(MatrixStack matrices, float x1, float y1, float x2, float y2) {
-    fill(matrices.peek().getPositionMatrix(), x1, y1, x2, y2);
+  public static void fill(DrawContext context, float x1, float y1, float x2, float y2) {
+    MatrixStack matrixes = context.getMatrices();
+    fill(matrixes.peek().getPositionMatrix(), x1, y1, x2, y2);
   }
 
   private static void fill(Matrix4f matrix, float x1, float y1, float x2, float y2) {
