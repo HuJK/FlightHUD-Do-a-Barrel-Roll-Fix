@@ -29,6 +29,11 @@ public class FlightComputer {
   public Float elytraHealth;
 
   public static Vector3f quaternionToEuler(Quaternionf q) {
+    /**
+      * Roll logic is from:
+      * https://github.com/HuJK/FlightHUD-Do-a-Barrel-Roll-Fix/blob/dabr-1.20.5/src/main/java/net/torocraft/flighthud/FlightComputer.java#L32
+      * it retrive rotation quaternion from camara to enable both mods will sync up when used together.
+    */
     double x = q.x;
     double y = q.y;
     double z = q.z;
