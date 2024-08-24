@@ -61,9 +61,9 @@ public class FlightComputer {
       return;
     }
     Vector3f eulerrotation = quaternionToEuler(rotation);
-    heading =  computeHeading(client);
-    pitch =  computePitch(client);
-    roll = computeRoll(client, -eulerrotation.z* rad2deg);
+    heading = 180 -eulerrotation.x * rad2deg;
+    pitch =  -eulerrotation.y* rad2deg;
+    roll = -eulerrotation.z* rad2deg;
     velocity = client.player.getVelocity();
     speed = computeSpeed(client);
     altitude = computeAltitude(client);
